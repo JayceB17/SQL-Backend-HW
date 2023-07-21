@@ -34,7 +34,7 @@ function executeSqlScript(scriptPath) {
     });
 }
   
-// Connect to the MySQL database
+// Connects to MySQL database
 connection.connect((err) => {
     if (err) {
       console.error('Error connecting to MySQL:', err);
@@ -46,6 +46,7 @@ connection.connect((err) => {
     displayOptions();
 });
 
+// Displays mycompanys lists of choices between departments, jobs and employees.
 function displayOptions() {
   inquirer
     .prompt([
@@ -63,8 +64,8 @@ function displayOptions() {
           viewDepartments();
           break;
         case 'View Jobs':
-          console.log('You choose: View Roles');
-            viewRoles();
+          console.log('You choose: View Jobs');
+            viewJobs();
           break;
         case 'View Employees':
           console.log('You choose: View Employees');
@@ -75,8 +76,8 @@ function displayOptions() {
             addDepartment();
             break;
         case 'Add Job':
-            console.log('You choose: Add Role');
-            addRole();
+            console.log('You choose: Add Job');
+            addJob();
             break;
         case 'Add Employee':
             console.log('You choose: Add Employee');
@@ -84,11 +85,11 @@ function displayOptions() {
             break;
         case 'Update an Employees Job':
             console.log('You choose: Update an Employees Job');
-            updateEmployeeRole();
+            updateEmployeeJob();
             break;
         default:
           console.log('Invalid choice');
-      }
+      } 
     });
 }
 function viewDepartments() {
@@ -100,7 +101,7 @@ function viewDepartments() {
         displayOptions();
     });
 }
-function viewRoles() {
+function viewJobs() {
     const sql = `SELECT * FROM jobs`;
 
     connection.query(sql, (err, res) => {
@@ -136,7 +137,7 @@ function addDepartment() {
             });
         });
 }
-function addRole() {
+function addJob() {
     const sql = `SELECT * FROM department`;
     connection.query(sql, (err, res) => {
         if (err) throw err;
@@ -150,7 +151,7 @@ function addRole() {
             {
                 type: 'input',
                 name: 'title',
-                message: 'What role do you want to add?'
+                message: 'What job do you want to add?'
             },
             {
                 type: 'input',
@@ -179,7 +180,7 @@ function addRole() {
 function addEmployee() {
     connection.query(`SELECT * FROM employee`, (err, employees) => {
         if (err) throw err;
-        connection.query(`SELECT * FROM jobs`, (err, roles) => {
+        connection.query(`SELECT * FROM jobs`, (err, jobs) => {
             if (err) throw err;
 
             inquirer.prompt([
@@ -195,9 +196,9 @@ function addEmployee() {
                 },
                 {
                     type: 'list',
-                    name: 'role',
+                    name: 'job',
                     message: "What is the new employee's job?",
-                    choices: roles.map(role => role.title)
+                    choices: jobs.map(job => job.title)
                 },
                 {
                     type: 'list',
@@ -207,13 +208,13 @@ function addEmployee() {
                 }
             ])
             .then(answer => {
-                const { first_name, last_name, role, manager } = answer;
+                const { first_name, last_name, job, manager } = answer;
 
-                const selectedRole = roles.find(r => r.title === role);
+                const selectedJob = jobs.find(r => r.title === job);
                 const selectedManager = employees.find(e => `${e.first_name} ${e.last_name}` === manager);
 
-                const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
-                const params = [first_name, last_name, selectedRole.role_id, selectedManager.id];
+                const sql = `INSERT INTO employee (first_name, last_name, job_id, manager_id) VALUES (?, ?, ?, ?)`;
+                const params = [first_name, last_name, selectedJob.job_id, selectedManager.id];
 
                 connection.query(sql, params, (err, res) => {
                     if (err) throw err;
@@ -224,13 +225,13 @@ function addEmployee() {
         });
     });
 }
-function updateEmployeeRole() {
+function updateEmployeeJob() {
     const sql = `SELECT * FROM employee`;
-    const sqlRoles = `SELECT * FROM jobs`;
+    const sqlJobs = `SELECT * FROM jobs`;
 
     connection.query(sql, (err, employees) => {
         if (err) throw err;
-        connection.query(sqlRoles, (err, roles) => {
+        connection.query(sqlJobs, (err, jobs) => {
             if (err) throw err;
             inquirer.prompt([
                 {
@@ -241,20 +242,20 @@ function updateEmployeeRole() {
                 },
                 {
                     type: 'list',
-                    name: 'role',
-                    message: 'What is the new role of the employee?',
-                    choices: roles.map(role => role.title)
+                    name: 'job',
+                    message: 'What is the new job for the employee?',
+                    choices: jobs.map(job => job.title)
                 }
             ])
                 .then(answer => {
                     const employee = employees.find(emp => emp.first_name === answer.employee);
-                    const role = roles.find(role => role.title === answer.role);
-                    const updateSql = `UPDATE employee SET role_id = ? WHERE id = ?`;
-                    const params = [role.role_id, employee.id];
+                    const job = jobs.find(job => job.title === answer.job);
+                    const updateSql = `UPDATE employee SET job_id = ? WHERE id = ?`;
+                    const params = [job.job_id, employee.id];
 
                     connection.query(updateSql, params, (err, result) => {
                         if (err) throw err;
-                        console.log(`Updated employee ${answer.employee} to ${answer.role}.`);
+                        console.log(`Updated employee ${answer.employee} to ${answer.job}.`);
                         displayOptions();
                     });
                 });

@@ -15,7 +15,7 @@ VALUES
   ('Sales assistant', 45000, 3),
   ('Produce Manager', 60000, 4);
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id)
+INSERT INTO employee (first_name, last_name, job_id, manager_id)
 VALUES
   ('Dylan', 'Wright', 1, 6),
   ('Lindy', 'Jordan', 2, NULL),
@@ -23,4 +23,4 @@ VALUES
   ('Jacob', 'Lutz', 4, NULL),
   ('Martha', 'Brook', 5, 1),
   ('Kelly', 'Clarkson', 6, NULL),
-  ('Kris', 'Reid', 7, NULL),
+  ('Kris', 'Reid', 7, NULL), 
