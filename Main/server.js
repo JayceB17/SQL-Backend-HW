@@ -6,9 +6,9 @@ const PORT = process.env.PORT || 3001;
 
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'company_db',
+    user: 'Jayceb17',
+    password: 'my50456$my',
+    database: 'mycompany_db',
 });
 
 function executeSqlScript(scriptPath) {
@@ -52,38 +52,38 @@ function displayOptions() {
       {
         type: 'list',
         name: 'choice',
-        message: 'Welcome to the company database. What would you like to do?',
-        choices: ['View Departments', 'View Roles', 'View Employees', 'Add Department', 'Add Role', 'Add Employee', 'Update an Employees Role'],
+        message: 'Welcome to mycompanys database. What is it that you want?',
+        choices: ['View Departments', 'View Jobs', 'View Employees', 'Add Department', 'Add job', 'Add Employee', 'Update an Employees Job'],
       },
     ])
     .then((answers) => {
       switch (answers.choice) {
         case 'View Departments':
-          console.log('You selected: View Departments');
+          console.log('You choose: View Departments');
           viewDepartments();
           break;
-        case 'View Roles':
-          console.log('You selected: View Roles');
+        case 'View Jobs':
+          console.log('You choose: View Roles');
             viewRoles();
           break;
         case 'View Employees':
-          console.log('You selected: View Employees');
+          console.log('You choose: View Employees');
           viewEmployees();
           break;
         case 'Add Department':
-            console.log('You selected: Add Department');
+            console.log('You choose: Add Department');
             addDepartment();
             break;
-        case 'Add Role':
-            console.log('You selected: Add Role');
+        case 'Add Job':
+            console.log('You choose: Add Role');
             addRole();
             break;
         case 'Add Employee':
-            console.log('You selected: Add Employee');
+            console.log('You choose: Add Employee');
             addEmployee(); 
             break;
-        case 'Update an Employees Role':
-            console.log('You selected: Update an Employees Role');
+        case 'Update an Employees Job':
+            console.log('You choose: Update an Employees Job');
             updateEmployeeRole();
             break;
         default:
@@ -122,7 +122,7 @@ function addDepartment() {
     inquirer.prompt({
         type: 'input',
         name: 'name',
-        message: 'What is the name of the department you would like to add?'
+        message: 'What department do you want to add?'
     })
         .then(answer => {
             console.log(answer.name)
@@ -130,7 +130,7 @@ function addDepartment() {
 
             connection.query(sql, (err, res) => {
                 if (err) throw err;
-                console.log(`Added department ${answer.name} to the database.`);
+                console.log(`You added department ${answer.name} to the database.`);
                 displayOptions();
                 console.log(answer.name);
             });
@@ -150,17 +150,17 @@ function addRole() {
             {
                 type: 'input',
                 name: 'title',
-                message: 'What is the name of the role you would like to add?'
+                message: 'What role do you want to add?'
             },
             {
                 type: 'input',
                 name: 'salary',
-                message: 'Salary for this role:'
+                message: 'This jobs salary:'
             },
             {
                 type: 'list',
                 name: 'department',
-                message: 'Which department does this role belong to?',
+                message: 'What is this departments job?',
                 choices: departmentchoices,
             },
         ])
@@ -170,7 +170,7 @@ function addRole() {
                 connection.query(sql, [answer.title, answer.salary, departmentId],
                  (err, res) => {
                     if (err) throw err;
-                    console.log(`Added role ${answer.title} to the database.`);
+                    console.log(`Added job ${answer.title} to the database.`);
                     displayOptions();
                 });
             });
@@ -196,7 +196,7 @@ function addEmployee() {
                 {
                     type: 'list',
                     name: 'role',
-                    message: "What is the new employee's role?",
+                    message: "What is the new employee's job?",
                     choices: roles.map(role => role.title)
                 },
                 {
