@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3001;
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'my50456$my',
+    password: 'My50456$my',
     database: 'mycompany_db',
 });
 
@@ -41,8 +41,8 @@ connection.connect((err) => {
       return;
     }
     console.log('Connected to MySQL database.');
-    executeSqlScript('./db/schema.sql');
-    executeSqlScript('./db/seeds.sql');
+    executeSqlScript('Main/db/schema.sql');
+    executeSqlScript('Main/db/seeds.sql');
     displayOptions();
 });
 
