@@ -1,15 +1,22 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
-const fs = require('fs');
-const { up } = require('inquirer/lib/utils/readline');
-const PORT = process.env.PORT || 3001;
+const db = require("./config/connection")
+// // const mysql = require('mysql2');
+// const fs = require('fs');
+// const { up } = require('inquirer/lib/utils/readline');
+// const PORT = process.env.PORT || 3001;
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'My50456$my',
-    database: 'mycompany_db',
-});
+// const connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'My50456$my',
+//     database: 'mycompany_db',
+// });
+db.connect(err => {
+    if(err) throw err 
+    console.log("you are now connected to the database!")
+    console.log("welcome!")
+    executeSqlScript()
+})
 
 function executeSqlScript(scriptPath) {
     const script = fs.readFileSync(scriptPath, 'utf8');
@@ -33,18 +40,6 @@ function executeSqlScript(scriptPath) {
         }
     });
 }
-  
-// Connects to MySQL database
-connection.connect((err) => {
-    if (err) {
-      console.error('Error connecting to MySQL:', err);
-      return;
-    }
-    console.log('Connected to MySQL database.');
-    executeSqlScript('Main/db/schema.sql');
-    executeSqlScript('Main/db/seeds.sql');
-    displayOptions();
-});
 
 // Displays mycompanys lists of choices between departments, jobs and employees.
 function displayOptions() {
@@ -143,7 +138,7 @@ function addJob() {
         if (err) throw err;
         const departmentchoices = res.map((department) => {
             return {
-               name: department.DepartmenName,
+               name: department.DepartmentName,
                value: department.DepartmentID
             };
         });
