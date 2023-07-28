@@ -15,31 +15,31 @@ db.connect(err => {
     if(err) throw err 
     console.log("you are now connected to the database!")
     console.log("welcome!")
-    executeSqlScript()
+    displayOptions()
 })
 
-function executeSqlScript(scriptPath) {
-    const script = fs.readFileSync(scriptPath, 'utf8');
-    const statements = script.split(';').filter(Boolean);
+// function executeSqlScript(scriptPath) {
+//     const script = fs.readFileSync(scriptPath, 'utf8');
+//     const statements = script.split(';').filter(Boolean);
 
-    let currentStatement = '';
+//     let currentStatement = '';
 
-    statements.forEach((statement) => {
-        currentStatement += statement.trim();
+//     statements.forEach((statement) => {
+//         currentStatement += statement.trim();
 
-        if (currentStatement.endsWith(';')) {
-            connection.query(currentStatement, (error, results) => {
-                if (error) {
-                    console.error('Error executing SQL statement:', error);
-                } else {
-                    console.log('SQL statement executed successfully:', currentStatement);
-                }
-            });
+//         if (currentStatement.endsWith(';')) {
+//             connection.query(currentStatement, (error, results) => {
+//                 if (error) {
+//                     console.error('Error executing SQL statement:', error);
+//                 } else {
+//                     console.log('SQL statement executed successfully:', currentStatement);
+//                 }
+//             });
 
-            currentStatement = '';
-        }
-    });
-}
+//             currentStatement = '';
+//         }
+//     });
+// }
 
 // Displays mycompanys lists of choices between departments, jobs and employees.
 function displayOptions() {
@@ -49,7 +49,7 @@ function displayOptions() {
         type: 'list',
         name: 'choice',
         message: 'Welcome to mycompanys database. What is it that you want?',
-        choices: ['View Departments', 'View Jobs', 'View Employees', 'Add Department', 'Add job', 'Add Employee', 'Update an Employees Job'],
+        choices: ['View Departments', 'View Jobs', 'View Employees', 'Add Department', {name:'Add Job'}, 'Add Employee', 'Update an Employees Job'],
       },
     ])
     .then((answers) => {
@@ -72,7 +72,7 @@ function displayOptions() {
             break;
         case 'Add Job':
             console.log('You choose: Add Job');
-            addJob();
+            addJobs();
             break;
         case 'Add Employee':
             console.log('You choose: Add Employee');
@@ -90,7 +90,7 @@ function displayOptions() {
 function viewDepartments() {
     const sql = `SELECT * FROM department`;
 
-    connection.query(sql, (err, res) => {
+    db.query(sql, (err, res) => {
         if (err) throw err;
         console.table(res);
         displayOptions();
@@ -99,7 +99,7 @@ function viewDepartments() {
 function viewJobs() {
     const sql = `SELECT * FROM jobs`;
 
-    connection.query(sql, (err, res) => {
+    db.query(sql, (err, res) => {
         if (err) throw err;
         console.table(res);
         displayOptions();
@@ -108,7 +108,7 @@ function viewJobs() {
 function viewEmployees() {
     const sql = `SELECT * FROM employee`;
 
-    connection.query(sql, (err, res) => {
+    db.query(sql, (err, res) => {
         if (err) throw err;
         console.table(res);
         displayOptions();
@@ -118,13 +118,13 @@ function addDepartment() {
     inquirer.prompt({
         type: 'input',
         name: 'name',
-        message: 'What department do you want to add?'
+        message: 'What department do you want to add?',
     })
         .then(answer => {
             console.log(answer.name)
-            const sql = `INSERT INTO department (DepartmentName) VALUES ("${answer.name}")`;
+            const sql = `INSERT INTO department (name) VALUES ("${answer.name}")`;
 
-            connection.query(sql, (err, res) => {
+            db.query(sql, (err, res) => {
                 if (err) throw err;
                 console.log(`You added department ${answer.name} to the database.`);
                 displayOptions();
@@ -132,26 +132,26 @@ function addDepartment() {
             });
         });
 }
-function addJob() {
+function addJobs() {
     const sql = `SELECT * FROM department`;
-    connection.query(sql, (err, res) => {
+    db.query(sql, (err, res) => {
         if (err) throw err;
         const departmentchoices = res.map((department) => {
             return {
-               name: department.DepartmentName,
-               value: department.DepartmentID
+               name: department.name,
+               value: department.id,
             };
         });
         inquirer.prompt([
             {
                 type: 'input',
                 name: 'title',
-                message: 'What job do you want to add?'
+                message: 'What job do you want to add?',
             },
             {
                 type: 'input',
                 name: 'salary',
-                message: 'This jobs salary:'
+                message: 'This jobs salary:',
             },
             {
                 type: 'list',
@@ -162,8 +162,8 @@ function addJob() {
         ])
             .then(answer => {
                 const departmentId = answer.department;
-                const sql = `INSERT INTO jobs (title, salary, DepartmentID) VALUES (?, ?, ?)`;
-                connection.query(sql, [answer.title, answer.salary, departmentId],
+                const sql = `INSERT INTO jobs (title, salary, department_id) VALUES (?, ?, ?)`;
+                db.query(sql, [answer.title, answer.salary, departmentId],
                  (err, res) => {
                     if (err) throw err;
                     console.log(`Added job ${answer.title} to the database.`);
@@ -173,9 +173,9 @@ function addJob() {
     });
 }
 function addEmployee() {
-    connection.query(`SELECT * FROM employee`, (err, employees) => {
+    db.query(`SELECT * FROM employee`, (err, employees) => {
         if (err) throw err;
-        connection.query(`SELECT * FROM jobs`, (err, jobs) => {
+        db.query(`SELECT * FROM jobs`, (err, jobs) => {
             if (err) throw err;
 
             inquirer.prompt([
@@ -211,7 +211,7 @@ function addEmployee() {
                 const sql = `INSERT INTO employee (first_name, last_name, job_id, manager_id) VALUES (?, ?, ?, ?)`;
                 const params = [first_name, last_name, selectedJob.job_id, selectedManager.id];
 
-                connection.query(sql, params, (err, res) => {
+                db.query(sql, params, (err, res) => {
                     if (err) throw err;
                     console.log(`Added employee ${first_name} ${last_name} to the database.`);
                     displayOptions();
@@ -224,9 +224,9 @@ function updateEmployeeJob() {
     const sql = `SELECT * FROM employee`;
     const sqlJobs = `SELECT * FROM jobs`;
 
-    connection.query(sql, (err, employees) => {
+    db.query(sql, (err, employees) => {
         if (err) throw err;
-        connection.query(sqlJobs, (err, jobs) => {
+      db.query(sqlJobs, (err, jobs) => {
             if (err) throw err;
             inquirer.prompt([
                 {
@@ -248,7 +248,7 @@ function updateEmployeeJob() {
                     const updateSql = `UPDATE employee SET job_id = ? WHERE id = ?`;
                     const params = [job.job_id, employee.id];
 
-                    connection.query(updateSql, params, (err, result) => {
+                    db.query(updateSql, params, (err, result) => {
                         if (err) throw err;
                         console.log(`Updated employee ${answer.employee} to ${answer.job}.`);
                         displayOptions();

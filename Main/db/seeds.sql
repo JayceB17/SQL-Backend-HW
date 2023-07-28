@@ -1,11 +1,11 @@
-INSERT INTO department (Department_id, name)
+INSERT INTO department (name)
 VALUES
-  (1, 'Frontend'),
-  (2, 'Merch'),
-  (3, 'Sales'),
-  (4, 'Produce');
+  ( 'Frontend'),
+  ( 'Merch'),
+  ( 'Sales'),
+  ( 'Produce');
 
-INSERT INTO jobs (title, salary, Department_id)
+INSERT INTO jobs (title, salary, department_id)
 VALUES
   ('Frontend Manager', 80000, 1),
   ('Frontend Representative', 45000, 1),
@@ -23,4 +23,4 @@ VALUES
   ('Jacob', 'Lutz', 4, NULL),
   ('Martha', 'Brook', 5, 1),
   ('Kelly', 'Clarkson', 6, NULL),
-  ('Kris', 'Reid', 7, NULL), 
+  ('Kris', 'Reid', 7, NULL); 
