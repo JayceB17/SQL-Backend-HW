@@ -1,0 +1,36 @@
+# SQL-Backend-HW
+
+This code is backend code you put in new imployees information or you can change current employees information the backend holdes the information and saves it.  
+
+Installation
+-Run npm i, 
+-mysql -u root -p, 
+node server.js
+
+Usage
+When running this code, you will be asked a series of questions, View Departments, View Jobs, View Employees, Add Job, Add employee, Update and Employees job.
+when you click on any question you answer the question as best you can.  
+
+Test
+Testing can be done by running the code above.
+
+Contributing/Contact
+To submit bug reports, feature requests, or pull requests, please email me at jayceb.ham17@yahoo.com, or visit my GitHub page: https://github.com/JayceB17
+
+License
+MIT license
+
+Deployment
+https://github.com/JayceB17/SQL-Backend-HW
+
+https://drive.google.com/file/d/1EcvWd0HEoA4UUf4cAP2jDuJ7yi7yfPi-/view
+
+
+Table of Contents
+-Installation
+-Usage
+-Test
+-Contributing/Contact
+-License
+-Deployment
+-Table of Contents
